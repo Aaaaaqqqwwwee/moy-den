@@ -424,6 +424,30 @@ body{background:
 .srow.cat{grid-template-columns:auto minmax(0,1fr) 84px auto}
 .srow.cat .field:nth-of-type(3){padding-left:8px;padding-right:8px;text-align:center}
 @media (prefers-reduced-motion:reduce){.confetti{display:none}.lr1,.xpbar i,.g-bar i{transition:none}}
+
+/* ===== v5 ===== */
+.hero.onbreak{background:linear-gradient(165deg,color-mix(in srgb,var(--accent2) 22%,var(--surface)),var(--surface) 60%)}
+.hero.onbreak .clock{color:var(--accent2)}
+.hero.onbreak .primary{background:var(--soft);color:var(--ink)}
+.banner{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:12px 16px;border-radius:16px;font-size:14px;background:color-mix(in srgb,var(--gold) 22%,var(--surface));border:1px solid color-mix(in srgb,var(--gold) 55%,var(--line))}
+.banner span{flex:1 1 220px}
+.quest{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.quest:first-child{border-top:0}
+.qchk{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;font-weight:700;color:var(--accent-ink)}
+.quest.done .qchk{background:var(--accent2);border-color:var(--accent2)}
+.quest em{font-style:normal;font-size:13px;font-weight:600;color:var(--muted)}
+.quest.done em{color:var(--accent2)}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center}
+.wkb{height:110px;display:flex;align-items:flex-end;background:var(--soft);border-radius:10px;overflow:hidden}
+.wkb i{display:block;width:100%;background:linear-gradient(180deg,var(--accent2),var(--accent))}
+.wkm{display:block;width:14px;height:14px;border-radius:50%;margin:8px auto 4px}
+.wkc b{font-size:13px;display:block}
+.wkc small{font-size:11px;color:var(--muted)}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:15;display:grid;justify-items:end;gap:10px}
+@media (min-width:860px){.fab{bottom:calc(24px + env(safe-area-inset-bottom,0px))}}
+.fab-btn{width:56px;height:56px;border-radius:50%;border:0;background:var(--grad);color:var(--accent-ink);font:500 30px/1 var(--ui);cursor:pointer;box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 45%,transparent)}
+.fab-menu{display:grid;gap:8px;justify-items:end}
+.fab-menu button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:11px 16px;font:600 14px var(--ui);cursor:pointer;box-shadow:0 4px 14px rgba(20,20,60,.16)}
 </style>
 </head>
 <body>
@@ -438,6 +462,7 @@ body{background:
   </nav>
 
   <main class="main">
+    <div class="banner" id="backup-banner" hidden></div>
     <div class="hud" id="hud" aria-label="Уровень и опыт"></div>
     <button class="pill" id="pill" type="button" hidden></button>
 
@@ -482,6 +507,12 @@ body{background:
             <div class="bar tbar" id="tbar" hidden><i id="tfill"></i></div>
             <p class="note"><span class="pulse" id="pulse" hidden></span><span id="clock-note"></span></p>
             <button class="primary" id="toggle" type="button" data-act="toggle">Начать</button>
+          </section>
+
+          <section class="card" aria-label="Квесты дня">
+            <h2>Квесты дня <span class="prog" id="quest-prog"></span></h2>
+            <div id="quests"></div>
+            <p class="hint">За каждый выполненный квест даётся 30 опыта. Новые квесты появляются каждый день.</p>
           </section>
 
           <section class="card" id="weekly-card" aria-label="Цели недели">
@@ -608,6 +639,7 @@ body{background:
         <div class="col">
           <section class="card"><h2>Активность за полгода</h2><div id="st-heat"></div></section>
           <section class="card"><h2>В какое время вы занимаетесь</h2><div id="st-hist"></div></section>
+          <section class="card"><h2>По дням недели</h2><div id="st-wk"></div></section>
           <section class="card"><h2>Что связано с настроением</h2><div id="st-inf"></div></section>
           <section class="card"><h2>Привычки</h2><div id="st-habits"></div></section>
         </div>
@@ -660,6 +692,7 @@ body{background:
             <p class="empty">В Safari нажмите «Поделиться», затем «На экран “Домой”». После этого приложение открывается как обычное и работает без интернета. Данные хранятся на этом устройстве, поэтому изредка делайте копию через «Показать данные» ниже.</p>
           </section>
           <section class="card"><h2>Данные</h2>
+            <p class="empty" id="backup-info" style="margin-bottom:6px"></p>
             <p class="empty" style="margin-bottom:10px">Всё хранится в этом браузере. Чтобы перенести данные на другое устройство, скопируйте их и вставьте там в это поле.</p>
             <textarea class="field" id="data-box" spellcheck="false" aria-label="Данные в формате JSON" placeholder="Нажмите «Показать данные» или вставьте сюда сохранённые данные"></textarea>
             <div class="btns">
@@ -676,6 +709,15 @@ body{background:
       </div>
     </section>
   </main>
+</div>
+<div class="fab" id="fab">
+  <div class="fab-menu" id="fab-menu" hidden>
+    <button type="button" data-act="fab-water">Стакан воды +1</button>
+    <button type="button" data-act="fab-task">Задача</button>
+    <button type="button" data-act="fab-note">Запись</button>
+    <button type="button" data-act="fab-mood">Настроение</button>
+  </div>
+  <button class="fab-btn" id="fab-btn" type="button" data-act="fab" aria-label="Быстро добавить" aria-expanded="false">+</button>
 </div>
 <div class="achbar" id="ach-toast" role="status" hidden></div>
 <div class="toast" id="toast" role="status" hidden><span id="toast-text"></span><button id="toast-undo" type="button">Отменить</button></div>
@@ -723,7 +765,7 @@ const CHECK='<span class="chk"><svg viewBox="0 0 16 16" aria-hidden="true"><path
 function blank(){return{
   cats:[{id:'study',name:'Учёба',color:PALETTE[0]},{id:'work',name:'Работа',color:PALETTE[1]},{id:'sport',name:'Спорт',color:PALETTE[2]},
         {id:'read',name:'Чтение',color:PALETTE[3]},{id:'rest',name:'Отдых',color:PALETTE[4]},{id:'other',name:'Другое',color:PALETTE[5]}],
-  entries:[],running:null,goalMin:240,sel:'study',theme:'auto',ach:{},achInit:false,lv:0,gc:{},
+  entries:[],running:null,goalMin:240,sel:'study',theme:'auto',ach:{},achInit:false,lv:0,gc:{},quests:{},lastBackup:0,bsnooze:0,pomo:false,
   moods:[],notes:[],
   tags:['Сон','Работа','Учёба','Друзья','Семья','Спорт','Погода','Еда','Здоровье'],
   habits:[{id:'h1',name:'Зарядка'},{id:'h2',name:'Чтение 20 минут'},{id:'h3',name:'Прогулка'}],
@@ -744,6 +786,10 @@ function normalize(s){
   d.achInit=!!s.achInit;
   if(s.lv>0)d.lv=s.lv;
   if(s.gc&&typeof s.gc==='object'&&!Array.isArray(s.gc))d.gc=s.gc;
+  if(s.quests&&typeof s.quests==='object'&&!Array.isArray(s.quests))d.quests=s.quests;
+  if(s.lastBackup>0)d.lastBackup=s.lastBackup;
+  if(s.bsnooze>0)d.bsnooze=s.bsnooze;
+  d.pomo=!!s.pomo;
   if((t=arr(s.moods,m=>m&&typeof m.ts==='number'&&m.v>=1&&m.v<=5)))d.moods=t;
   if((t=arr(s.notes,n=>n&&typeof n.ts==='number'&&typeof n.text==='string')))d.notes=t;
   if((t=arr(s.tags,x=>typeof x==='string'&&x)))d.tags=t;
@@ -773,7 +819,7 @@ const setDay=(k,p)=>{state.day[k]=Object.assign({},state.day[k],p);};
 const moodsOn=k=>state.moods.filter(m=>dk(m.ts)===k).sort((a,b)=>a.ts-b.ts);
 const segs=now=>{
   const a=state.entries.slice();
-  if(state.running)a.push({id:'run',cat:state.running.cat,title:state.running.title,start:state.running.start,end:now});
+  if(state.running&&state.running.phase!=='break')a.push({id:'run',cat:state.running.cat,title:state.running.title,start:state.running.start,end:now});
   return a;
 };
 function streak(hid){
@@ -850,21 +896,25 @@ function renderChips(){
   sel.innerHTML=state.cats.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
   sel.value=state.cats.some(c=>c.id===prev)?prev:state.sel;
 }
+const BREAK_FOR={25:5,45:10,60:15};
 function renderTargets(){
-  $('targets').innerHTML=[0,25,45,60].map(m=>`<button type="button" role="radio" class="chip" aria-checked="${targetSel===m}" data-act="target" data-v="${m}">${m?m+' мин':'Без лимита'}</button>`).join('');
+  let h=[0,25,45,60].map(m=>`<button type="button" role="radio" class="chip" aria-checked="${targetSel===m}" data-act="target" data-v="${m}">${m?m+' мин':'Без лимита'}</button>`).join('');
+  if(targetSel)h+=`<button type="button" class="chip tag" aria-pressed="${!!state.pomo}" data-act="pomo">Перерыв после сессии</button>`;
+  $('targets').innerHTML=h;
 }
 function renderTimer(now){
-  const r=state.running,c=catById(r?r.cat:state.sel),hero=$('hero');
-  hero.style.setProperty('--c',c.color);
-  hero.classList.toggle('running',!!r);
-  $('clock').textContent=r?fmtClock(now-r.start):'00:00:00';
-  $('toggle').textContent=r?'Завершить':'Начать';
+  const r=state.running,brk=!!(r&&r.phase==='break'),c=catById(r?r.cat:state.sel),hero=$('hero');
+  hero.style.setProperty('--c',brk?'var(--accent2)':c.color);
+  hero.classList.toggle('running',!!r&&!brk);
+  hero.classList.toggle('onbreak',brk);
+  $('clock').textContent=r?(brk?fmtClock(Math.max(0,r.target*60000-(now-r.start))):fmtClock(now-r.start)):'00:00:00';
+  $('toggle').textContent=r?(brk?'Пропустить перерыв':'Завершить'):'Начать';
   $('pulse').hidden=!r;
   $('targets').hidden=!!r;
   const has=!!(r&&r.target);
   $('tbar').hidden=!has;
   if(has)$('tfill').style.width=Math.min(100,(now-r.start)/(r.target*60000)*100)+'%';
-  $('clock-note').textContent=r?c.name+', начато в '+fmtTime(r.start)+(has?', цель '+r.target+' мин':''):'Выберите занятие и нажмите «Начать»';
+  $('clock-note').textContent=r?(brk?'Перерыв. Отдохните и отойдите от экрана':c.name+', начато в '+fmtTime(r.start)+(has?', цель '+r.target+' мин':'')):'Выберите занятие и нажмите «Начать»';
 }
 function renderTimeline(now){
   const a=view,b=dayEnd(view),span=b-a,today=a===dayStart(now);
@@ -1152,7 +1202,7 @@ function renderStats(){
   if(ms2>1)rv.push('Настроение отмечено '+ms2+' дн. подряд.');
   $('st-review').innerHTML=rv.length?'<ul class="review">'+rv.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p class="empty">Когда появятся занятия, настроение и привычки, здесь будет краткий пересказ периода.</p>';
   renderCalendar();
-  renderHeat();renderHist(days,all,today);
+  renderHeat();renderHist(days,all,today);renderWeekdays(days);
   $('st-donut').innerHTML=donutSvg(ids.map(id=>({v:tot[id],color:catById(id).color})),totalAll);
 }
 
@@ -1174,6 +1224,7 @@ function renderCalendar(){
 
 /* ---------- SETTINGS ---------- */
 function renderSettings(){
+  renderBackupInfo();
   document.querySelectorAll('#theme-ctl button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.t===state.theme)));
   const g=$('goal');if(document.activeElement!==g)g.value=String(state.goalMin/60);
   $('set-cats').innerHTML=state.cats.map(c=>`<li class="srow cat"><input type="color" value="${esc(c.color)}" data-edit="cat-color" data-id="${esc(c.id)}" aria-label="Цвет категории ${esc(c.name)}"><input class="field" value="${esc(c.name)}" maxlength="24" data-edit="cat-name" data-id="${esc(c.id)}" aria-label="Название категории"><input class="field" type="number" min="0" max="168" step="0.5" inputmode="decimal" placeholder="ч/нед" value="${c.weekly>0?c.weekly/60:''}" data-edit="cat-weekly" data-id="${esc(c.id)}" aria-label="Цель в неделю, часов"><button class="del" type="button" data-act="cat-del" data-id="${esc(c.id)}" aria-label="Удалить категорию"${state.cats.length<2?' disabled':''}>×</button></li>`).join('');
@@ -1187,7 +1238,7 @@ let tickN=0,achT=null,recentList=[];
 const FLAME='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFD36B" d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4-1-6 1-10z"/></svg>';
 const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M13 2L5 14h6l-1 8 8-12h-6z"/></svg>';
 const TITLES=['Новичок','Исследователь','Ходок','Практик','Мастер ритма','Стратег','Наставник','Эксперт','Гроссмейстер','Легенда'];
-const XP_LABELS={time:['Занятия','#5646F0'],mood:['Настроение','#EE9A4E'],habit:['Привычки','#3FA66B'],task:['Задачи','#F5B82E'],note:['Записи','#8C6BC8'],water:['Вода','#3BA3F5'],sleep:['Сон','#7B4DF0'],focus:['Главное дело','#12B5A6'],goal:['Цели дня','#E4605A']};
+const XP_LABELS={time:['Занятия','#5646F0'],mood:['Настроение','#EE9A4E'],habit:['Привычки','#3FA66B'],task:['Задачи','#F5B82E'],note:['Записи','#8C6BC8'],water:['Вода','#3BA3F5'],sleep:['Сон','#7B4DF0'],focus:['Главное дело','#12B5A6'],goal:['Цели дня','#E4605A'],quest:['Квесты дня','#FF8F5A'],pomo:['Сессии фокуса','#F5B82E']};
 const ACH=[
  {id:'first',em:'🌱',name:'Первый шаг',desc:'Запишите первое занятие',v:c=>[c.entries,1]},
  {id:'focus25',em:'🎯',name:'Фокус',desc:'Сессия от 25 минут',v:c=>[Math.floor(c.maxSession/60000),25]},
@@ -1221,21 +1272,23 @@ function dayTotalsMap(inclRun){
   const m={},now=Date.now();
   const add=(s,e)=>{let t=s;while(t<e){const n=Math.min(e,dayEnd(t));if(n<=t)break;const k=dk(t);m[k]=(m[k]||0)+(n-t);t=n;}};
   state.entries.forEach(e=>add(e.start,e.end));
-  if(inclRun&&state.running)add(state.running.start,now);
+  if(inclRun&&state.running&&state.running.phase!=='break')add(state.running.start,now);
   return m;
 }
 function computeXp(only){
-  const x={time:0,mood:0,habit:0,task:0,note:0,water:0,sleep:0,focus:0,goal:0};
+  const x={time:0,mood:0,habit:0,task:0,note:0,water:0,sleep:0,focus:0,goal:0,quest:0,pomo:0};
   const keep=k=>!only||k===only,goal=state.goalMin*60000,map=dayTotalsMap();
   Object.keys(map).forEach(k=>{if(!keep(k))return;x.time+=Math.floor(map[k]/300000);if(map[k]>=goal)x.goal+=50;});
   state.moods.forEach(m=>{if(keep(dk(m.ts)))x.mood+=10;});
   Object.keys(state.hlog).forEach(k=>{if(keep(k))x.habit+=state.hlog[k].length*15;});
   state.tasks.forEach(t=>{if(t.done&&keep(t.date))x.task+=10;});
   state.notes.forEach(n=>{if(keep(dk(n.ts)))x.note+=15;});
+  Object.keys(state.quests).forEach(k=>{if(keep(k))x.quest+=state.quests[k].length*30;});
   Object.keys(state.day).forEach(k=>{
     if(!keep(k))return;
     const d=state.day[k];
     x.water+=Math.min(12,d.water||0)*2;if(d.sleep>0)x.sleep+=10;if(d.focusDone)x.focus+=20;
+    x.pomo+=(d.pomos||0)*5;
   });
   return x;
 }
@@ -1339,7 +1392,7 @@ function checkGoalToday(now){
   if(total>=state.goalMin*60000){state.gc[k]=1;rawSave();burst();toast('Цель дня выполнена. Отличная работа!');}
 }
 function hudTick(){
-  renderHud();checkLevel();checkAch();
+  renderHud();checkLevel();checkAch();checkQuests(Date.now());
   if(tab==='rewards')renderRewards();
 }
 function renderHud(){
@@ -1397,7 +1450,9 @@ function renderGauges(now){
   h+=gRow('Сон',sleep?fmt1(sleep)+' из 8 ч':'не отмечен',gBar(sleep/8,'linear-gradient(90deg,#7B4DF0,var(--accent))'));
   h+=gRow('Настроение',avg!==null?fmt1(avg)+', '+MOOD_NAME[Math.round(avg)].toLowerCase():'не отмечено','<div class="g-mood'+(avg===null?' empty':'')+'">'+(avg!==null?'<i style="left:'+((avg-1)/4*100).toFixed(1)+'%"></i>':'')+'</div>');
   h+=gRow('Энергия',en!==null?fmt1(en)+' из 5':'не отмечена',gBar((en||0)/5,'linear-gradient(90deg,var(--m2),var(--m4))'));
+  if(d.pomos>0)h+=gRow('Сессии фокуса',String(d.pomos),gSeg(8,Math.min(8,d.pomos),'var(--gold)'));
   setHtml($('gauges'),h);
+  renderQuests(now);
 }
 function renderFocus(){
   const d=dayObj(dk(view)),f=$('focus');
@@ -1485,6 +1540,84 @@ function renderHist(days,all,today){
   $('st-hist').innerHTML='<div class="hist">'+hrs.map((v,i)=>'<i style="height:'+Math.max(3,v/mx*100)+'%;background:color-mix(in srgb,var(--accent) '+Math.round(18+82*v/mx)+'%,var(--soft))" title="'+pad(i)+':00, '+fmtDur(v)+'"></i>').join('')+'</div><div class="ticks" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div><p class="hint">Чаще всего вы занимаетесь с '+pad(bi)+':00 до '+pad((bi+2)%24)+':00.</p>';
 }
 
+/* ---------- v5: квесты, копия данных, дни недели ---------- */
+function dayCtx(k){
+  const a=fromDK(k),b=dayEnd(a),now=Date.now(),cats=new Set();
+  let ms=0;
+  segs(now).forEach(x=>{const o=overlap(x,a,b);if(o>0){ms+=o;if(o>=300000)cats.add(x.cat);}});
+  const d=dayObj(k);
+  return{min:ms/60000,cats:cats.size,moods:moodsOn(k).length,
+    habits:(state.hlog[k]||[]).filter(id=>state.habits.some(h=>h.id===id)).length,
+    tasks:state.tasks.filter(t=>t.date===k&&t.done).length,water:d.water||0,
+    notes:state.notes.filter(n=>dk(n.ts)===k).length,sleep:d.sleep>0?1:0,focus:d.focusDone?1:0};
+}
+const QUEST_POOL=[
+  {id:'min30',text:'Позаниматься 30 минут',t:()=>30,v:c=>Math.floor(c.min)},
+  {id:'min60',text:'Позаниматься 60 минут',t:()=>60,v:c=>Math.floor(c.min)},
+  {id:'mood2',text:'Отметить настроение два раза',t:()=>2,v:c=>c.moods},
+  {id:'habits',text:'Выполнить привычки',t:()=>Math.min(2,state.habits.length),v:c=>c.habits,ok:()=>state.habits.length>0},
+  {id:'water',text:'Выпить 6 стаканов воды',t:()=>6,v:c=>c.water},
+  {id:'note',text:'Сделать запись',t:()=>1,v:c=>c.notes},
+  {id:'tasks',text:'Закрыть 2 задачи',t:()=>2,v:c=>c.tasks},
+  {id:'sleep',text:'Отметить сон',t:()=>1,v:c=>c.sleep},
+  {id:'cats',text:'Позаниматься в двух категориях',t:()=>2,v:c=>c.cats},
+  {id:'focus',text:'Выполнить главное дело дня',t:()=>1,v:c=>c.focus}
+];
+function questsFor(k){
+  const arr=QUEST_POOL.filter(q=>!q.ok||q.ok()),out=[];
+  let h=0;
+  for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;
+  while(out.length<3&&arr.length){h=(h*1664525+1013904223)>>>0;out.push(arr.splice(h%arr.length,1)[0]);}
+  return out;
+}
+function checkQuests(now){
+  const k=dk(now),ctx=dayCtx(k),done=(state.quests[k]||[]).slice();
+  let ch=false;
+  questsFor(k).forEach(q=>{
+    const t=q.t();
+    if(t>0&&!done.includes(q.id)&&q.v(ctx)>=t){done.push(q.id);ch=true;toast('Квест выполнен: '+q.text+'. +30 опыта');burst();}
+  });
+  if(ch){state.quests[k]=done;rawSave();renderHud();}
+}
+function renderQuests(now){
+  const k=dk(view),ctx=dayCtx(k),done=state.quests[k]||[],qs=questsFor(k);
+  let n=0;
+  const h=qs.map(q=>{
+    const t=q.t(),v=Math.min(q.v(ctx),t),ok=done.includes(q.id)||v>=t;
+    if(ok)n++;
+    return '<div class="quest'+(ok?' done':'')+'"><span class="qchk" aria-hidden="true">'+(ok?'✓':'')+'</span><div class="qmain"><div class="g-top"><span>'+esc(q.text)+'</span><b>'+v+' из '+t+'</b></div>'+gBar(v/t,ok?'var(--accent2)':'var(--grad)')+'</div><em>+30</em></div>';
+  }).join('');
+  setHtml($('quests'),h);
+  $('quest-prog').textContent=n+' из '+qs.length;
+}
+function renderBackupBanner(){
+  const b=$('backup-banner'),now=Date.now();
+  const size=state.entries.length+state.moods.length+state.notes.length;
+  const old=!state.lastBackup||now-state.lastBackup>7*86400000;
+  if(size<10||!old||now<(state.bsnooze||0)){b.hidden=true;return;}
+  const txt=state.lastBackup?'Последняя копия данных была '+Math.floor((now-state.lastBackup)/86400000)+' дн. назад.':'Копии данных ещё нет.';
+  b.innerHTML='<span>'+txt+' Данные хранятся только на этом устройстве.</span><button class="btn small solid" type="button" data-go="settings">Сделать копию</button><button class="btn small" type="button" data-act="backup-snooze">Позже</button>';
+  b.hidden=false;
+}
+function renderBackupInfo(){
+  const now=Date.now();
+  $('backup-info').textContent=state.lastBackup?'Последняя копия: '+new Date(state.lastBackup).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})+' ('+Math.floor((now-state.lastBackup)/86400000)+' дн. назад).':'Копия ещё не делалась.';
+}
+function renderWeekdays(days){
+  const names=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],full=['в понедельник','во вторник','в среду','в четверг','в пятницу','в субботу','в воскресенье'];
+  const agg=names.map(()=>({t:0,n:0,m:[]}));
+  days.forEach(d=>{const w=(new Date(d.a).getDay()+6)%7;agg[w].t+=d.total;agg[w].n++;if(d.mood!==null)agg[w].m.push(d.mood);});
+  const avgT=agg.map(x=>x.n?x.t/x.n:0),mx=Math.max(Math.max.apply(null,avgT),1);
+  const mm=agg.map(x=>mean(x.m));
+  let h='<div class="wk">'+agg.map((x,i)=>'<div class="wkc"><div class="wkb"><i style="height:'+(avgT[i]/mx*100)+'%"></i></div><span class="wkm" style="background:'+(mm[i]!==null?moodColor(mm[i]):'var(--soft)')+'"></span><b>'+names[i]+'</b><small>'+(avgT[i]?fmtHours(avgT[i]):'–')+'</small></div>').join('')+'</div>';
+  const notes=[];
+  if(Math.max.apply(null,avgT)>0)notes.push('Больше всего вы занимаетесь '+full[avgT.indexOf(Math.max.apply(null,avgT))]+'.');
+  const vm=mm.filter(x=>x!==null);
+  if(vm.length>1)notes.push('Лучшее настроение обычно '+full[mm.indexOf(Math.max.apply(null,vm))]+'.');
+  h+='<p class="hint">Столбец показывает среднее время в этот день недели, кружок среднее настроение. '+esc(notes.join(' '))+'</p>';
+  $('st-wk').innerHTML=h;
+}
+
 /* ---------- navigation ---------- */
 function renderTab(){
   applyTheme();
@@ -1494,6 +1627,7 @@ function renderTab(){
   else if(tab==='rewards')renderRewards();
   else renderSettings();
   renderHud();
+  renderBackupBanner();
   updatePill(Date.now());
 }
 function switchTab(t){
@@ -1508,7 +1642,7 @@ function updatePill(now){
   if(r&&tab!=='day'){
     const c=catById(r.cat);
     p.hidden=false;p.style.setProperty('--c',c.color);
-    p.innerHTML='<i></i>'+esc(c.name)+' '+fmtClock(now-r.start);
+    p.innerHTML='<i></i>'+(r.phase==='break'?'Перерыв '+fmtClock(Math.max(0,r.target*60000-(now-r.start))):esc(c.name)+' '+fmtClock(now-r.start));
   }else p.hidden=true;
 }
 $('pill').addEventListener('click',()=>switchTab('day'));
@@ -1553,6 +1687,7 @@ function addCatInline(){
 }
 
 document.addEventListener('click',e=>{
+  if(!e.target.closest('.fab'))$('fab-menu').hidden=true;
   const g=e.target.closest('[data-go]');
   if(g){switchTab(g.dataset.go);return;}
   const el=e.target.closest('[data-act]');
@@ -1568,7 +1703,7 @@ document.addEventListener('click',e=>{
     case 'toggle':
       if(state.running){
         const r=state.running;
-        if(now-r.start>=5000)state.entries.push({id:uid(),cat:r.cat,title:r.title||'',start:r.start,end:now});
+        if(r.phase!=='break'&&now-r.start>=5000)state.entries.push({id:uid(),cat:r.cat,title:r.title||'',start:r.start,end:now});
         state.running=null;$('title').value='';
       }else {initAudio();state.running={cat:state.sel,title:$('title').value.trim(),start:now,target:targetSel};}
       save();renderDay();break;
@@ -1657,6 +1792,21 @@ document.addEventListener('click',e=>{
       let ok=false;
       try{const ta=document.createElement('textarea');ta.value=txt;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();ok=document.execCommand&&document.execCommand('copy');document.body.removeChild(ta);}catch(x){}
       toast(ok?'Итог дня скопирован. Вставьте его в сообщение или заметку.':'Не удалось скопировать автоматически');break;}
+    case 'pomo':state.pomo=!state.pomo;save();renderTargets();break;
+    case 'backup-snooze':state.bsnooze=now+3*86400000;rawSave();renderBackupBanner();break;
+    case 'fab':{const m=$('fab-menu');m.hidden=!m.hidden;$('fab-btn').setAttribute('aria-expanded',String(!m.hidden));break;}
+    case 'fab-water':{
+      $('fab-menu').hidden=true;
+      const k=dk(now);setDay(k,{water:(dayObj(k).water||0)+1});save();renderTab();toast('Стакан воды добавлен');break;}
+    case 'fab-task':
+      $('fab-menu').hidden=true;
+      if(tab!=='day'){view=dayStart(now);resetDayInputs();switchTab('day');}
+      $('task-new').scrollIntoView({behavior:'smooth',block:'center'});$('task-new').focus();break;
+    case 'fab-note':$('fab-menu').hidden=true;switchTab('notes');$('ntext').focus();break;
+    case 'fab-mood':
+      $('fab-menu').hidden=true;
+      if(tab!=='day'){view=dayStart(now);resetDayInputs();switchTab('day');}
+      $('faces').scrollIntoView({behavior:'smooth',block:'center'});break;
     case 'water':{
       const k=dk(view),cur=dayObj(k).water||0;
       setDay(k,{water:cur===v?v-1:v});save();renderMetrics();break;}
@@ -1703,6 +1853,7 @@ document.addEventListener('click',e=>{
     case 'tag-add':addTag();break;
     case 'data-show':$('data-box').value=JSON.stringify(state,null,1);$('data-msg').textContent='';break;
     case 'data-copy':{
+      state.lastBackup=Date.now();rawSave();renderBackupInfo();renderBackupBanner();
       if(!$('data-box').value)$('data-box').value=JSON.stringify(state,null,1);
       const box=$('data-box');box.select();
       let ok=false;
@@ -1783,12 +1934,26 @@ setInterval(()=>{
   }
   tickN++;
   if(tab==='day'){renderTimer(now);if(state.running||tickN%30===0)renderTimeline(now);}
-  if(tickN%5===0)checkGoalToday(now);
+  if(tickN%5===0){checkGoalToday(now);checkQuests(now);}
   updatePill(now);
   const rr=state.running;
-  if(rr&&rr.target&&!rr.notified&&now-rr.start>=rr.target*60000){
-    rr.notified=true;save();beep();
-    toast('Сессия '+rr.target+' мин завершена. Можно продолжить или завершить.');
+  if(rr&&rr.target&&now-rr.start>=rr.target*60000){
+    if(rr.phase==='break'){
+      state.running=null;save();beep();
+      toast('Перерыв закончился. Можно начать следующую сессию.');renderTab();
+    }else if(!rr.notified){
+      if(state.pomo){
+        const end=rr.start+rr.target*60000,br=BREAK_FOR[rr.target]||5;
+        state.entries.push({id:uid(),cat:rr.cat,title:rr.title||'',start:rr.start,end:end});
+        const pk=dk(end);setDay(pk,{pomos:(dayObj(pk).pomos||0)+1});
+        state.running={cat:rr.cat,title:rr.title||'',start:end,target:br,phase:'break'};
+        save();beep();burst();
+        toast('Сессия завершена. Перерыв '+br+' мин.');renderTab();
+      }else{
+        rr.notified=true;save();beep();
+        toast('Сессия '+rr.target+' мин завершена. Можно продолжить или завершить.');
+      }
+    }
   }
 },1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderTab();});
