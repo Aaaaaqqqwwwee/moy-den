@@ -1,5 +1,5 @@
 // Поднимайте номер версии при каждом обновлении index.html
-const CACHE = 'moy-den-v5';
+const CACHE = 'moy-den-v7';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
