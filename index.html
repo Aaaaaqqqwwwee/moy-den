@@ -1055,7 +1055,15 @@ section.card[aria-label="Настроение"],section.card[aria-label="При�
 .pal-i[aria-selected="true"],.pal-i:hover{background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
 .pal-foot{display:flex;gap:18px;padding:12px 20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
 .pal-foot kbd{margin-right:3px}
-.datepick{flex:none;min-width:150px}
+.datepick{flex:1 1 150px;min-width:0}
+.dh-nav{flex-wrap:wrap}
+.col{grid-template-columns:minmax(0,1fr)}
+@media (max-width:859px){
+  .faces{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .face{padding:12px 2px 8px;border-radius:18px;min-width:0}
+  .face svg{width:32px;height:32px}
+  .face span{font-size:10px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
 .tk-add{grid-template-columns:minmax(0,1fr);min-width:0}
 .tk-addrow{min-width:0}
 .tk-main{min-width:0}
@@ -1067,6 +1075,51 @@ section.card[aria-label="Настроение"],section.card[aria-label="При�
   .tk-addrow .btn{padding:11px 14px}
   .tk-add input#tk-new{font-size:16px}
 }
+
+/* ===== v10: календарь задач, акцент, доступность ===== */
+.calw{background:var(--surface);border-radius:28px;padding:18px;box-shadow:var(--shadow)}
+.cal-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cal-bar h2{flex:1;margin:0;font:800 20px var(--ui);white-space:nowrap}
+.cgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cwd{font:700 12px var(--ui);color:var(--muted);text-align:center;padding:4px 0}
+.ccell{min-height:98px;border-radius:16px;background:var(--soft);padding:7px 7px 6px;cursor:pointer;display:grid;align-content:start;gap:3px;min-width:0;transition:background .12s}
+.ccell:hover{background:color-mix(in srgb,var(--accent) 10%,var(--soft))}
+.ccell.empty{background:transparent;cursor:default;pointer-events:none}
+.ccell.today .cnum{background:var(--accent);color:var(--accent-ink)}
+.ccell.sel{background:color-mix(in srgb,var(--accent) 9%,var(--surface));box-shadow:inset 0 0 0 2px var(--accent)}
+.ccell.late .cnum{color:var(--over)}
+.ccell.dropover{outline:2px dashed var(--accent);outline-offset:-2px}
+.cnum{font:800 13px var(--ui);width:26px;height:26px;border-radius:50%;display:grid;place-items:center}
+.cchip,.cdots i{--pc:var(--muted)}
+.cchip.p3,.cdots i.p3{--pc:var(--p3)}
+.cchip.p2,.cdots i.p2{--pc:var(--p2)}
+.cchip.p1,.cdots i.p1{--pc:var(--p1)}
+.cchip{display:block;font:600 11.5px/1.3 var(--ui);padding:3px 7px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:color-mix(in srgb,var(--pc) 15%,var(--surface));border-left:3px solid var(--pc);cursor:pointer}
+.cchip.done{opacity:.5;text-decoration:line-through}
+.cmore{font:700 11px var(--ui);color:var(--muted);padding-left:4px}
+.cdots{display:none}
+.vcal .tk-search,.vcal .tk-prog{display:none}
+@media (hover:none){.calw .hint{display:none}}
+@media (max-width:859px){
+  .cal-bar h2{font-size:18px}
+  .calw{padding:12px;border-radius:24px}
+  .ccell{min-height:54px;padding:5px 2px;justify-items:center}
+  .cchip,.cmore{display:none}
+  .cdots{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;max-width:34px}
+  .cdots i{width:6px;height:6px;border-radius:50%;background:var(--pc);display:block}
+  .cdots i.done{opacity:.4}
+  .cgrid{gap:4px}
+}
+.swatches{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.sw{width:36px;height:36px;border-radius:50%;border:0;background:var(--sw);cursor:pointer;box-shadow:inset 0 0 0 3px var(--surface),0 0 0 2px transparent;transition:transform .12s}
+.sw:hover{transform:scale(1.08)}
+.sw[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--surface),0 0 0 3px var(--sw)}
+:root[data-accent]{--accent:var(--acc);--grad:linear-gradient(90deg,var(--acc),color-mix(in srgb,var(--acc) 55%,#E84FD0));--t-violet:var(--acc);--hud:linear-gradient(120deg,color-mix(in srgb,var(--acc) 92%,#000),var(--acc) 55%,#12B886 125%)}
+@media (prefers-color-scheme:dark){:root[data-accent]:not([data-theme="light"]){--accent:color-mix(in srgb,var(--acc) 62%,#fff)}}
+:root[data-accent][data-theme="dark"]{--accent:color-mix(in srgb,var(--acc) 62%,#fff)}
+:root[data-accent] .t-violet{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 88%,#000),color-mix(in srgb,var(--acc) 78%,#fff))}
+:root[data-accent] .hud .xpbar i{background:linear-gradient(90deg,var(--acc),color-mix(in srgb,var(--acc) 55%,#E84FD0))}
+.tbody:focus-visible,.ccell:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:14px}
 </style>
 </head>
 <body>
@@ -1330,7 +1383,10 @@ section.card[aria-label="Настроение"],section.card[aria-label="При�
       <div class="cols">
         <div class="col">
           <section class="card"><h2>Оформление</h2>
+            <div class="dlab" style="margin-bottom:8px">Тема</div>
             <div class="seg-ctl" id="theme-ctl" role="group" aria-label="Тема оформления"><button type="button" data-act="theme" data-t="auto" aria-pressed="true">Авто</button><button type="button" data-act="theme" data-t="light" aria-pressed="false">Светлая</button><button type="button" data-act="theme" data-t="dark" aria-pressed="false">Тёмная</button></div>
+            <div class="dlab" style="margin:18px 0 0">Цвет акцента</div>
+            <div class="swatches" id="swatches" role="group" aria-label="Цвет акцента"></div>
           </section>
           <section class="card"><h2>Цель по занятиям</h2>
             <div class="goal-set"><label for="goal">Часов в день</label><input class="field" id="goal" type="number" min="0.25" max="24" step="0.25" inputmode="decimal"></div>
@@ -1461,7 +1517,7 @@ const CHECK='<span class="chk"><svg viewBox="0 0 16 16" aria-hidden="true"><path
 function blank(){return{
   cats:[{id:'study',name:'Учёба',color:PALETTE[0]},{id:'work',name:'Работа',color:PALETTE[1]},{id:'sport',name:'Спорт',color:PALETTE[2]},
         {id:'read',name:'Чтение',color:PALETTE[3]},{id:'rest',name:'Отдых',color:PALETTE[4]},{id:'other',name:'Другое',color:PALETTE[5]}],
-  entries:[],running:null,goalMin:240,sel:'study',theme:'auto',ach:{},achInit:false,lv:0,gc:{},quests:{},lastBackup:0,bsnooze:0,pomo:false,wk:{},
+  entries:[],running:null,goalMin:240,sel:'study',theme:'auto',ach:{},achInit:false,lv:0,gc:{},quests:{},lastBackup:0,bsnooze:0,pomo:false,wk:{},accent:'',
   moods:[],notes:[],
   tags:['Сон','Работа','Учёба','Друзья','Семья','Спорт','Погода','Еда','Здоровье'],
   habits:[{id:'h1',name:'Зарядка'},{id:'h2',name:'Чтение 20 минут'},{id:'h3',name:'Прогулка'}],
@@ -1486,6 +1542,7 @@ function normalize(s){
   if(s.lastBackup>0)d.lastBackup=s.lastBackup;
   if(s.bsnooze>0)d.bsnooze=s.bsnooze;
   d.pomo=!!s.pomo;
+  if(/^#[0-9a-fA-F]{6}$/.test(s.accent||''))d.accent=s.accent;
   if(s.wk&&typeof s.wk==='object'&&!Array.isArray(s.wk))d.wk=s.wk;
   if((t=arr(s.moods,m=>m&&typeof m.ts==='number'&&m.v>=1&&m.v<=5)))d.moods=t;
   if((t=arr(s.notes,n=>n&&typeof n.ts==='number'&&typeof n.text==='string')))d.notes=t;
@@ -1536,6 +1593,7 @@ function moodStreak(){
 function applyTheme(){
   const r=document.documentElement;
   if(state.theme==='light'||state.theme==='dark')r.setAttribute('data-theme',state.theme);else r.removeAttribute('data-theme');
+  if(state.accent){r.setAttribute('data-accent','1');r.style.setProperty('--acc',state.accent);}else{r.removeAttribute('data-accent');r.style.removeProperty('--acc');}
 }
 let calMonth=(()=>{const d=new Date();d.setDate(1);d.setHours(0,0,0,0);return d.getTime();})();
 let targetSel=0,editActId=null,actx=null;
@@ -1937,7 +1995,9 @@ function renderCalendar(){
 }
 
 /* ---------- SETTINGS ---------- */
+const ACCENTS=[['','Фиолетовый','#6C4CFF'],['#2F6BFF','Синий','#2F6BFF'],['#0E9AA7','Бирюзовый','#0E9AA7'],['#12A67A','Зелёный','#12A67A'],['#E83E8C','Розовый','#E83E8C'],['#F26B1D','Оранжевый','#F26B1D']];
 function renderSettings(){
+  $('swatches').innerHTML=ACCENTS.map(a=>'<button type="button" class="sw" data-act="accent" data-c="'+a[0]+'" style="--sw:'+a[2]+'" aria-pressed="'+((state.accent||'')===a[0])+'" aria-label="'+a[1]+'" title="'+a[1]+'"></button>').join('');
   renderBackupInfo();
   document.querySelectorAll('#theme-ctl button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.t===state.theme)));
   const g=$('goal');if(document.activeElement!==g)g.value=String(state.goalMin/60);
@@ -2474,6 +2534,7 @@ function renderTaskNote(days){
 function press(sel){const b=document.querySelector(sel);if(b)b.click();}
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeModals();$('fab-menu').hidden=true;if(tv.detail){tv.detail=null;tkRender();}return;}
+  if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'&&e.target.dataset&&e.target.dataset.act){e.preventDefault();e.target.click();return;}
   if(e.ctrlKey||e.metaKey||e.altKey)return;
   const t=e.target,tag=((t&&t.tagName)||'').toLowerCase();
   if(tag==='input'||tag==='textarea'||tag==='select'||(t&&t.isContentEditable))return;
@@ -2509,6 +2570,8 @@ const doneKey=t=>t.doneAt?dk(t.doneAt):(t.date||'');
 const todayKey=()=>dk(Date.now());
 const tv=Object.assign({list:'today',view:'list',sort:'date',showDone:false},state.ui||{});
 tv.q='';tv.sel=null;tv.detail=null;tv.flash=null;tv.newList=false;tv.renaming=false;
+tv.month=(()=>{const d=new Date();d.setDate(1);d.setHours(0,0,0,0);return d.getTime();})();
+tv.cday=dk(Date.now());
 const tkAdd={date:'',prio:0,list:''};
 let tkVis=[];
 function tvSave(){state.ui={list:tv.list,view:tv.view,sort:tv.sort,showDone:tv.showDone};rawSave();}
@@ -2643,6 +2706,7 @@ function tkAddTask(){
   if(!p.text){toast('Введите название задачи');return;}
   const L=tv.list;
   let date=p.date,listId=p.listId,prio=p.prio;const tags=p.tags.slice();
+  if(!date&&tv.view==='calendar'&&!tv.q)date=tv.cday;
   if(!date&&L==='today')date=todayKey();
   if(!listId&&L.indexOf('p:')===0)listId=L.slice(2);
   if(!prio&&L==='important')prio=3;
@@ -2769,7 +2833,7 @@ function taskRow(t){
   (t.tags||[]).forEach(g=>{meta+='<span class="mchip">#'+esc(g)+'</span>';});
   if(lst&&tv.list!==('p:'+lst.id))meta+='<span class="mchip"><i style="background:'+esc(lst.color)+'"></i>'+esc(lst.name)+'</span>';
   const cls='task p'+p+(t.done?' done':'')+((!t.done&&t.status==='doing')?' st-doing':'')+(tv.sel===t.id?' sel':'')+(tv.flash===t.id?' new':'');
-  return '<div class="swrap"><div class="swipe-bg" aria-hidden="true"><span>✓ Готово</span><span>Завтра →</span></div><div class="'+cls+'" style="--lc:'+esc(lst?lst.color:'transparent')+'" data-id="'+esc(t.id)+'" draggable="true"><button type="button" role="checkbox" class="tcheck" aria-checked="'+t.done+'" aria-label="Отметить выполненной" data-act="tk-toggle" data-id="'+esc(t.id)+'">'+TCK+'</button><div class="tbody" data-act="tk-open" data-id="'+esc(t.id)+'"><div class="ttitle">'+esc(t.text)+'</div>'+(meta?'<div class="tmeta">'+meta+'</div>':'')+'</div><div class="tact"><button type="button" class="ibtn'+(running?' on':'')+'" data-act="tk-play" data-id="'+esc(t.id)+'" aria-label="'+(running?'Остановить таймер':'Запустить таймер')+'" title="'+(running?'Остановить таймер':'Запустить таймер')+'">'+(running?'■':'▶')+'</button></div></div></div>';
+  return '<div class="swrap"><div class="swipe-bg" aria-hidden="true"><span>✓ Готово</span><span>Завтра →</span></div><div class="'+cls+'" style="--lc:'+esc(lst?lst.color:'transparent')+'" data-id="'+esc(t.id)+'" draggable="true"><button type="button" role="checkbox" class="tcheck" aria-checked="'+t.done+'" aria-label="Отметить выполненной" data-act="tk-toggle" data-id="'+esc(t.id)+'">'+TCK+'</button><div class="tbody" role="button" tabindex="0" data-act="tk-open" data-id="'+esc(t.id)+'"><div class="ttitle">'+esc(t.text)+'</div>'+(meta?'<div class="tmeta">'+meta+'</div>':'')+'</div><div class="tact"><button type="button" class="ibtn'+(running?' on':'')+'" data-act="tk-play" data-id="'+esc(t.id)+'" aria-label="'+(running?'Остановить таймер':'Запустить таймер')+'" title="'+(running?'Остановить таймер':'Запустить таймер')+'">'+(running?'■':'▶')+'</button></div></div></div>';
 }
 function tkRenderLists(){
   const t=todayKey(),c={inbox:0,today:0,upcoming:0,all:0,important:0,done:0},lp={},tg={};
@@ -2796,6 +2860,7 @@ function tkRenderLists(){
   $('tk-lists').innerHTML=smart+'<div class="lhead"><span>Проекты</span><button type="button" data-act="tk-newlist" aria-label="Новый проект" title="Новый проект">+</button></div>'+projects+form+tags;
 }
 function tkRenderHead(items){
+  $('tab-tasks').classList.toggle('vcal',tv.view==='calendar'&&!tv.q);
   const L=tv.list,proj=L.indexOf('p:')===0?state.lists.find(x=>x.id===L.slice(2)):null;
   const title=tv.q?'Поиск':(proj?proj.name:(L.indexOf('t:')===0?'#'+L.slice(2):(LIST_NAMES[L]||'Задачи')));
   let sub;
@@ -2804,7 +2869,7 @@ function tkRenderHead(items){
   else sub=items.length+' '+(items.length%10===1&&items.length%100!==11?'задача':((items.length%10>=2&&items.length%10<=4&&(items.length%100<10||items.length%100>=20))?'задачи':'задач'));
   const tools=(proj?'<button class="icon" type="button" data-act="tk-rename" aria-label="Переименовать проект" title="Переименовать">✎</button><button class="icon" type="button" data-act="tk-dellist" aria-label="Удалить проект" title="Удалить проект">×</button>':'')+
     (L==='done'&&!tv.q?'<button class="btn small danger" type="button" data-act="tk-cleardone">Очистить</button>':'')+
-    '<div class="seg-ctl" role="group" aria-label="Вид"><button type="button" data-act="tk-view" data-v="list" aria-pressed="'+(tv.view==='list')+'">Список</button><button type="button" data-act="tk-view" data-v="board" aria-pressed="'+(tv.view==='board')+'">Доска</button></div>'+
+    '<div class="seg-ctl" role="group" aria-label="Вид"><button type="button" data-act="tk-view" data-v="list" aria-pressed="'+(tv.view==='list')+'">Список</button><button type="button" data-act="tk-view" data-v="board" aria-pressed="'+(tv.view==='board')+'">Доска</button><button type="button" data-act="tk-view" data-v="calendar" aria-pressed="'+(tv.view==='calendar')+'">Календарь</button></div>'+
     '<select class="field" id="tk-sort" aria-label="Сортировка"><option value="date"'+(tv.sort==='date'?' selected':'')+'>По сроку</option><option value="priority"'+(tv.sort==='priority'?' selected':'')+'>По приоритету</option><option value="name"'+(tv.sort==='name'?' selected':'')+'>По названию</option><option value="created"'+(tv.sort==='created'?' selected':'')+'>Сначала новые</option></select>'+
     '<button class="chip tag" type="button" data-act="tk-showdone" aria-pressed="'+tv.showDone+'">Выполненные</button>';
   $('tk-head').innerHTML='<div class="tk-titlebox">'+(tv.renaming&&proj?'<input id="tk-rename" class="dtinput" value="'+esc(proj.name)+'" maxlength="30" aria-label="Название проекта">':'<h1>'+esc(title)+'</h1>')+'<p>'+esc(sub)+'</p></div><div class="tk-tools">'+tools+'</div>';
@@ -2825,6 +2890,7 @@ function tkEmpty(){
   return '<div class="tk-empty"><div class="em">'+e[0]+'</div><b>'+e[1]+'</b><span>'+e[2]+'</span>'+smp+'</div>';
 }
 function tkRenderBody(items){
+  if(tv.view==='calendar'&&!tv.q){tkRenderCalendar();return;}
   items=items||tkItems();
   tkVis=[];
   let html='';
@@ -2904,9 +2970,9 @@ function tkDropTo(id,key){
   else return;
   save();refreshTasks();
 }
-function zoneOf(e){return e.target&&e.target.closest?e.target.closest('.bbody,.lst[data-drop]'):null;}
+function zoneOf(e){return e.target&&e.target.closest?e.target.closest('.bbody,.lst[data-drop],.ccell[data-date]'):null;}
 document.addEventListener('dragstart',e=>{
-  const row=e.target&&e.target.closest?e.target.closest('.task'):null;
+  const row=e.target&&e.target.closest?e.target.closest('.task,.cchip'):null;
   if(row&&e.dataTransfer){e.dataTransfer.setData('text/plain',row.dataset.id);e.dataTransfer.effectAllowed='move';row.classList.add('dragging');}
 });
 document.addEventListener('dragend',e=>{
@@ -2928,6 +2994,7 @@ document.addEventListener('drop',e=>{
   const id=e.dataTransfer.getData('text/plain');
   if(z.dataset.col)tkSetStatus(id,z.dataset.col);
   else if(z.dataset.drop)tkDropTo(id,z.dataset.drop);
+  else if(z.dataset.date){const t=state.tasks.find(x=>x.id===id);if(t){t.date=z.dataset.date;tv.cday=z.dataset.date;save();refreshTasks();toast('Срок изменён: '+dueLabel(t.date).toLowerCase());}}
 });
 
 /* ---------- v9: плитки, свайп, палитра команд ---------- */
@@ -3023,6 +3090,36 @@ document.addEventListener('keydown',e=>{
     else if(e.key==='Enter'){e.preventDefault();palRun(palSel);}
   }
 });
+
+/* календарь задач */
+function tkRenderCalendar(){
+  const first=new Date(tv.month),y=first.getFullYear(),m=first.getMonth();
+  let title=first.toLocaleDateString('ru-RU',{month:'long',year:'numeric'}).replace(/\s*г\.?$/,'');
+  title=title.charAt(0).toUpperCase()+title.slice(1);
+  const offset=(first.getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),today=todayKey();
+  const L=tv.list,scope=x=>(L.indexOf('p:')===0||L.indexOf('t:')===0)?tkScope(x,L):true;
+  const by={};
+  state.tasks.filter(x=>x.date&&scope(x)).forEach(x=>{(by[x.date]=by[x.date]||[]).push(x);});
+  const srt=a=>a.slice().sort((p,q)=>((p.done?1:0)-(q.done?1:0))||((q.priority||0)-(p.priority||0)));
+  const total=Math.ceil((offset+dim)/7)*7;
+  let cells=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(n=>'<div class="cwd">'+n+'</div>').join('');
+  for(let i=0;i<total;i++){
+    const d=i-offset+1;
+    if(d<1||d>dim){cells+='<div class="ccell empty" aria-hidden="true"></div>';continue;}
+    const key=dk(new Date(y,m,d).getTime()),list=srt(by[key]||[]),open=list.filter(x=>!x.done).length;
+    const chips=list.slice(0,3).map(x=>'<span class="cchip p'+(x.priority||0)+(x.done?' done':'')+'" draggable="true" data-id="'+esc(x.id)+'" data-act="tk-open" title="'+esc(x.text)+'">'+esc(x.text)+'</span>').join('');
+    const more=list.length>3?'<span class="cmore">+'+(list.length-3)+' ещё</span>':'';
+    const dots=list.length?'<span class="cdots">'+list.slice(0,5).map(x=>'<i class="p'+(x.priority||0)+(x.done?' done':'')+'"></i>').join('')+'</span>':'';
+    cells+='<div class="ccell'+(key===today?' today':'')+(key===tv.cday?' sel':'')+(key<today&&open?' late':'')+'" data-date="'+key+'" data-act="tk-cday" role="button" tabindex="0" aria-label="'+d+' число, задач: '+list.length+'"><span class="cnum">'+d+'</span>'+chips+more+dots+'</div>';
+  }
+  const sel=srt(state.tasks.filter(x=>x.date===tv.cday&&scope(x)));
+  tkVis=sel.map(x=>x.id);
+  const cdLabel=new Date(fromDK(tv.cday)).toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
+  $('tk-body').innerHTML='<div class="calw"><div class="cal-bar"><button class="icon" type="button" data-act="tkc-prev" aria-label="Предыдущий месяц">‹</button><h2>'+esc(title)+'</h2><button class="btn small" type="button" data-act="tkc-today">Сегодня</button><button class="icon" type="button" data-act="tkc-next" aria-label="Следующий месяц">›</button></div><div class="cgrid">'+cells+'</div><p class="hint">Перетащите задачу на другую дату, чтобы перенести её.</p></div>'+
+    '<div class="tgroup"><span>'+esc(cdLabel.charAt(0).toUpperCase()+cdLabel.slice(1))+'</span><em>'+sel.length+'</em></div>'+
+    (sel.length?'<div class="tlist">'+sel.map(taskRow).join('')+'</div>':'<div class="tk-empty"><b>На этот день задач нет</b><span>Добавьте задачу в поле выше, она получит эту дату</span></div>');
+  tv.flash=null;
+}
 
 /* ---------- navigation ---------- */
 function renderTab(){
@@ -3204,6 +3301,10 @@ document.addEventListener('click',e=>{
     case 'modal-close':closeModals();break;
     case 'grp':statGrp=el.dataset.g;renderStats();break;
     case 'tk-add':tkAddTask();break;
+    case 'accent':state.accent=el.dataset.c;save();applyTheme();renderSettings();break;
+    case 'tk-cday':tv.cday=el.dataset.date;tkRender();break;
+    case 'tkc-prev':case 'tkc-next':{const d=new Date(tv.month);d.setMonth(d.getMonth()+(act==='tkc-next'?1:-1));tv.month=d.getTime();tkRender();break;}
+    case 'tkc-today':{const d=new Date();d.setDate(1);d.setHours(0,0,0,0);tv.month=d.getTime();tv.cday=todayKey();tkRender();break;}
     case 'tk-sample':$('tk-new').value=el.dataset.t;$('tk-new').focus();break;
     case 'palette':openPalette();break;
     case 'pal-run':palRun(+el.dataset.i);break;
